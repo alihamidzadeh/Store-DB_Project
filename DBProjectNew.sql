@@ -23,11 +23,11 @@ DROP TABLE IF EXISTS `StoreProject`.`Supplier` ;
 CREATE TABLE IF NOT EXISTS `StoreProject`.`Supplier` (
   `supplierID` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
-  `phoneNumber` VARCHAR(45) NOT NULL,
+  `phoneNumber` VARCHAR(12) NOT NULL,
   `score` INT NULL,
-  `address` VARCHAR(45) NOT NULL,
-  `postalCode` VARCHAR(45) NOT NULL,
-  `email` VARCHAR(45) NOT NULL,
+  `address` VARCHAR(100) NOT NULL,
+  `postalCode` VARCHAR(10) NOT NULL,
+  `email` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`supplierID`))
 ENGINE = InnoDB;
 
@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS `StoreProject`.`Item` (
   `category` VARCHAR(45) NOT NULL,
   `score` INT NOT NULL,
   `color` VARCHAR(45) NULL,
-  `offer` VARCHAR(45) NULL,
-  `weight` VARCHAR(45) NOT NULL,
+  `offer` INT(3) NULL,
+  `weight` BIGINT(7) NOT NULL,
   PRIMARY KEY (`itemID`))
 ENGINE = InnoDB;
 
@@ -57,7 +57,7 @@ DROP TABLE IF EXISTS `StoreProject`.`PriceHistory` ;
 
 CREATE TABLE IF NOT EXISTS `StoreProject`.`PriceHistory` (
   `date` DATETIME NOT NULL,
-  `price` VARCHAR(45) NOT NULL,
+  `price` BIGINT(7) NOT NULL,
   `Item_itemID` INT NOT NULL,
   PRIMARY KEY (`date`, `Item_itemID`),
   INDEX `fk_PriceHistory_Item1_idx` (`Item_itemID` ASC) VISIBLE,
@@ -94,9 +94,9 @@ CREATE TABLE IF NOT EXISTS `StoreProject`.`Customer` (
   `customerID` INT NOT NULL AUTO_INCREMENT,
   `fName` VARCHAR(45) NOT NULL,
   `lName` VARCHAR(45) NOT NULL,
-  `phoneNumber` VARCHAR(45) NOT NULL,
-  `birthDate` DATETIME NULL,
-  `ssn` VARCHAR(45) NULL,
+  `phoneNumber` VARCHAR(12) NOT NULL,
+  `birthDate` DATE NULL,
+  `ssn` VARCHAR(10) NULL,
   `userName` VARCHAR(45) NOT NULL,
   `password` VARCHAR(256) NOT NULL,
   `email` VARCHAR(45) NOT NULL,
@@ -120,11 +120,11 @@ DROP TABLE IF EXISTS `StoreProject`.`Addresses` ;
 
 CREATE TABLE IF NOT EXISTS `StoreProject`.`Addresses` (
   `addressID` INT NOT NULL AUTO_INCREMENT,
-  `postalCode` VARCHAR(45) NOT NULL,
-  `description` VARCHAR(45) NOT NULL,
-  `phoneNumber` VARCHAR(45) NULL,
-  `city` VARCHAR(45) NOT NULL,
-  `country` VARCHAR(45) NOT NULL,
+  `postalCode` VARCHAR(10) NOT NULL,
+  `description` VARCHAR(100) NOT NULL,
+  `phoneNumber` VARCHAR(12) NULL,
+  `city` VARCHAR(50) NOT NULL,
+  `country` VARCHAR(50) NOT NULL,
   `customerID` INT NOT NULL,
   PRIMARY KEY (`addressID`),
   INDEX `fk_Addresses_Customer1_idx` (`customerID` ASC) VISIBLE,
@@ -143,9 +143,9 @@ DROP TABLE IF EXISTS `StoreProject`.`Order` ;
 
 CREATE TABLE IF NOT EXISTS `StoreProject`.`Order` (
   `orderID` INT NOT NULL AUTO_INCREMENT,
-  `totalPrice` VARCHAR(45) NOT NULL,
+  `totalPrice` BIGINT NOT NULL,
   `orderDate` DATETIME NULL,
-  `offer` VARCHAR(45) NULL,
+  `offer` BIGINT(7) NULL,
   `status` VARCHAR(45) NOT NULL,
   `offerID` INT NULL,
   `addressID` INT NOT NULL,
@@ -203,18 +203,18 @@ CREATE TABLE IF NOT EXISTS `StoreProject`.`Staff` (
   `lName` VARCHAR(45) NOT NULL,
   `salary` BIGINT(7) NOT NULL,
   `role` VARCHAR(45) NOT NULL,
-  `ssn` VARCHAR(45) NOT NULL,
+  `ssn` VARCHAR(10) NOT NULL,
   `startDate` DATETIME NOT NULL,
-  `phoneNumber` VARCHAR(45) NOT NULL,
+  `phoneNumber` VARCHAR(12) NOT NULL,
   `gender` INT(1) NULL,
-  `address` VARCHAR(45) NOT NULL,
+  `address` VARCHAR(100) NOT NULL,
   `insuranceCode` VARCHAR(45) NOT NULL,
-  `postalCode` VARCHAR(45) NOT NULL,
-  `email` VARCHAR(45) NOT NULL,
-  `userName` VARCHAR(45) NOT NULL,
+  `postalCode` VARCHAR(10) NOT NULL,
+  `email` VARCHAR(50) NOT NULL,
+  `userName` VARCHAR(50) NOT NULL,
   `password` VARCHAR(256) NOT NULL,
-  `birthDate` VARCHAR(45) NULL,
-  `bankAccountCode` VARCHAR(45) NOT NULL,
+  `birthDate` DATE NULL,
+  `bankAccountCode` VARCHAR(24) NOT NULL,
   `managerID` INT NULL,
   PRIMARY KEY (`staffID`),
   INDEX `fk_Staff_Staff1_idx` (`managerID` ASC) VISIBLE,
@@ -233,12 +233,12 @@ DROP TABLE IF EXISTS `StoreProject`.`Branch` ;
 
 CREATE TABLE IF NOT EXISTS `StoreProject`.`Branch` (
   `branchID` INT NOT NULL AUTO_INCREMENT,
-  `city` VARCHAR(45) NOT NULL,
-  `country` VARCHAR(45) NOT NULL,
-  `phoneNumber` VARCHAR(45) NOT NULL,
-  `faxNumber` VARCHAR(45) NOT NULL,
-  `address` VARCHAR(45) NOT NULL,
-  `postalCode` VARCHAR(45) NOT NULL,
+  `city` VARCHAR(50) NOT NULL,
+  `country` VARCHAR(50) NOT NULL,
+  `phoneNumber` VARCHAR(12) NOT NULL,
+  `faxNumber` VARCHAR(12) NOT NULL,
+  `address` VARCHAR(100) NOT NULL,
+  `postalCode` VARCHAR(10) NOT NULL,
   `managerID` INT NOT NULL,
   PRIMARY KEY (`branchID`),
   INDEX `fk_Branch_Staff1_idx` (`managerID` ASC) VISIBLE,
@@ -257,11 +257,11 @@ DROP TABLE IF EXISTS `StoreProject`.`Warehouse` ;
 
 CREATE TABLE IF NOT EXISTS `StoreProject`.`Warehouse` (
   `warehouseID` INT NOT NULL AUTO_INCREMENT,
-  `city` VARCHAR(45) NOT NULL,
-  `country` VARCHAR(45) NOT NULL,
-  `address` VARCHAR(45) NOT NULL,
-  `postalCode` VARCHAR(45) NOT NULL,
-  `phoneNumber` VARCHAR(45) NOT NULL,
+  `city` VARCHAR(50) NOT NULL,
+  `country` VARCHAR(50) NOT NULL,
+  `address` VARCHAR(100) NOT NULL,
+  `postalCode` VARCHAR(10) NOT NULL,
+  `phoneNumber` VARCHAR(12) NOT NULL,
   PRIMARY KEY (`warehouseID`))
 ENGINE = InnoDB;
 
@@ -274,7 +274,7 @@ DROP TABLE IF EXISTS `StoreProject`.`Vehicle` ;
 CREATE TABLE IF NOT EXISTS `StoreProject`.`Vehicle` (
   `vehicleID` INT NOT NULL AUTO_INCREMENT,
   `model` VARCHAR(45) NOT NULL,
-  `value` VARCHAR(45) NOT NULL,
+  `value` BIGINT(10) NOT NULL,
   `driverID` INT NOT NULL,
   `usedFor` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`vehicleID`),
@@ -294,7 +294,7 @@ DROP TABLE IF EXISTS `StoreProject`.`Comments` ;
 
 CREATE TABLE IF NOT EXISTS `StoreProject`.`Comments` (
   `commentID` INT NOT NULL AUTO_INCREMENT,
-  `title` VARCHAR(45) NOT NULL,
+  `title` VARCHAR(100) NOT NULL,
   `date` DATETIME NOT NULL,
   `text` VARCHAR(500) NULL,
   `itemID` INT NOT NULL,
@@ -322,8 +322,8 @@ DROP TABLE IF EXISTS `StoreProject`.`Notifications` ;
 
 CREATE TABLE IF NOT EXISTS `StoreProject`.`Notifications` (
   `notifID` INT NOT NULL AUTO_INCREMENT,
-  `title` VARCHAR(45) NOT NULL,
-  `text` VARCHAR(45) NOT NULL,
+  `title` VARCHAR(100) NOT NULL,
+  `text` VARCHAR(500) NOT NULL,
   `date` DATETIME NOT NULL,
   `for` VARCHAR(45) NOT NULL,
   `customerID` INT NOT NULL,
@@ -481,8 +481,8 @@ DROP TABLE IF EXISTS `StoreProject`.`Supplier_supplies_Item` ;
 CREATE TABLE IF NOT EXISTS `StoreProject`.`Supplier_supplies_Item` (
   `Item_itemID` INT NOT NULL,
   `Supplier_supplierID` INT NOT NULL,
-  `date` VARCHAR(45) NOT NULL,
-  `amount` VARCHAR(45) NOT NULL,
+  `date` DATETIME NOT NULL,
+  `amount` BIGINT(7) NOT NULL,
   PRIMARY KEY (`Item_itemID`, `Supplier_supplierID`),
   INDEX `fk_Item_has_Supplier_Supplier1_idx` (`Supplier_supplierID` ASC) VISIBLE,
   INDEX `fk_Item_has_Supplier_Item1_idx` (`Item_itemID` ASC) VISIBLE,
