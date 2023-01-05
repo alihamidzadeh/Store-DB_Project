@@ -1,5 +1,5 @@
 INSERT INTO
-    `storeproject`.`customer` (
+    `StoreProject`.`Customer` (
         `fName`,
         `lName`,
         `phoneNumber`,
@@ -28,7 +28,7 @@ VALUES
     );
 
 INSERT INTO
-    `storeproject`.`customer` (
+    `StoreProject`.`Customer` (
         `fName`,
         `lName`,
         `phoneNumber`,
@@ -57,7 +57,7 @@ VALUES
     );
 
 INSERT INTO
-    `storeproject`.`customer` (
+    `StoreProject`.`Customer` (
         `fName`,
         `lName`,
         `phoneNumber`,
@@ -86,7 +86,7 @@ VALUES
     );
 
 INSERT INTO
-    `storeproject`.`customer` (
+    `StoreProject`.`Customer` (
         `fName`,
         `lName`,
         `phoneNumber`,
@@ -116,7 +116,7 @@ VALUES
 
 
 
-INSERT INTO `storeproject`.`staff`
+INSERT INTO `StoreProject`.`Staff`
 (
 `fName`,
 `lName`,
@@ -153,7 +153,7 @@ VALUES(
 "1850-02-20",
 "080180000001254896251342",
 null);
-INSERT INTO `storeproject`.`staff`
+INSERT INTO `StoreProject`.`Staff`
 (
 `fName`,
 `lName`,

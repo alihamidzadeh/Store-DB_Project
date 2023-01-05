@@ -1,4 +1,4 @@
-INSERT INTO `storeproject`.`item`
+INSERT INTO `StoreProject`.`Item`
 (
 `name`,
 `currentPrice`,
@@ -17,7 +17,7 @@ VALUES
 "30",
 "3");
 
-INSERT INTO `storeproject`.`item`
+INSERT INTO `StoreProject`.`Item`
 (
 `name`,
 `currentPrice`,
@@ -36,7 +36,7 @@ VALUES
 "15",
 "5");
 
-INSERT INTO `storeproject`.`item`
+INSERT INTO `StoreProject`.`Item`
 (
 `name`,
 `currentPrice`,
@@ -56,7 +56,7 @@ null,
 "0.5");
 
 
-INSERT INTO `storeproject`.`item`
+INSERT INTO `StoreProject`.`Item`
 (
 `name`,
 `currentPrice`,
@@ -76,7 +76,7 @@ VALUES
 "0.2");
 
 
-INSERT INTO `storeproject`.`staff`
+INSERT INTO `StoreProject`.`Staff`
 (
 `fName`,
 `lName`,
@@ -116,7 +116,7 @@ VALUES
 1);
 
 
-INSERT INTO `storeproject`.`item`
+INSERT INTO `StoreProject`.`Item`
 (
 `name`,
 `currentPrice`,
@@ -136,7 +136,7 @@ VALUES
 "0.2");
 
 
-INSERT INTO `storeproject`.`staff`
+INSERT INTO `StoreProject`.`Staff`
 (
 `fName`,
 `lName`,

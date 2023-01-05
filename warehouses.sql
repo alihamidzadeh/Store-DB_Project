@@ -1,4 +1,4 @@
-INSERT INTO `storeproject`.`warehouse`
+INSERT INTO `StoreProject`.`Warehouse`
 (
 `city`,
 `country`,
@@ -13,7 +13,7 @@ VALUES(
 "989053213280"
 );
 
-INSERT INTO `storeproject`.`warehouse`
+INSERT INTO `StoreProject`.`Warehouse`
 (
 `city`,
 `country`,
@@ -28,7 +28,7 @@ VALUES(
 "989053213270"
 );
 
-INSERT INTO `storeproject`.`warehouse`
+INSERT INTO `StoreProject`.`Warehouse`
 (
 `city`,
 `country`,
