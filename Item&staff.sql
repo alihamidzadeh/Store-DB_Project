@@ -52,7 +52,7 @@ VALUES
 "Electronics",
 0,
 "Pink",
-"NULL",
+null,
 "0.5");
 
 
@@ -101,8 +101,8 @@ VALUES
 "tataba",
 2000000,
 "DBadminn",
-"09262070400",
-"1990-04-26 09:22",
+"9262070400",
+"1990-04-26 09:22:00",
 "989396330",
 0,
 "Iran , Mashad , piroozi BLv , piroozi 21",
@@ -113,7 +113,7 @@ VALUES
 "3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7",
 "1990-03-02",
 "546789",
-"0";)
+1);
 
 
 INSERT INTO `storeproject`.`item`
@@ -162,7 +162,7 @@ VALUES
 5000000,
 "scrum master",
 "051258",
-"2020-04-26 10:22",
+"2020-04-26 10:22:00",
 "972852",
 1,
 "Iran , Mashad , piroozi BLv , hashemie 50",
@@ -173,6 +173,6 @@ VALUES
 "3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7",
 "1985-03-02",
 "546789",
-"0";)
+2);
 
 

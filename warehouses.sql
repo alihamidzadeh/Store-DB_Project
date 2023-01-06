@@ -5,11 +5,11 @@ INSERT INTO `storeproject`.`warehouse`
 `address`,
 `postalCode`,
 `phoneNumber`)
-VALUES
+VALUES(
 "mashhad",
 "iran",
 "hashemieh 67",
-"23458888889",
+"3458888889",
 "989053213280"
 );
 
@@ -20,7 +20,7 @@ INSERT INTO `storeproject`.`warehouse`
 `address`,
 `postalCode`,
 `phoneNumber`)
-VALUES
+VALUES(
 "tehran",
 "iran",
 "zaferanieh",
@@ -35,10 +35,10 @@ INSERT INTO `storeproject`.`warehouse`
 `address`,
 `postalCode`,
 `phoneNumber`)
-VALUES
+VALUES(
 "shiraz",
 "iran",
 "hashemieh 67",
 "1357909743",
-"989053213260",
+"989053213260"
 );

@@ -17,7 +17,7 @@ VALUES
         "Ehsan",
         "Ghorbani",
         "09156646936",
-        "2002-02-22 10:00:00",
+        "2002-02-22",
         "0926252134",
         "ehsangh190",
         "3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7",
@@ -46,7 +46,7 @@ VALUES
         "Tina",
         "tavakoli",
         "09156646936",
-        "2002-02-22 10:00:00",
+        "2002-02-22",
         "0926251462",
         "ttavakoli",
         "3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7",
@@ -75,7 +75,7 @@ VALUES
         "Kiana",
         "Kermani",
         "0915001377",
-        "2002-04-16 10:00:00",
+        "2002-04-16",
         "0926252143",
         "kkermani",
         "3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7",
@@ -104,7 +104,7 @@ VALUES
         "Ali",
         "Hamidzadeh",
         "09152273816",
-        "2002-05-15 10:00:00",
+        "2002-05-15",
         "0926251885",
         "ahamidzadeh",
         "3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7",
@@ -135,7 +135,7 @@ INSERT INTO `storeproject`.`staff`
 `birthDate`,
 `bankAccountCode`,
 `managerID`)
-VALUES
+VALUES(
 "Sina",
 "Golmakani",
 25000000,
@@ -152,8 +152,7 @@ VALUES
 "3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7",
 "1850-02-20",
 "080180000001254896251342",
-"null";
-
+null);
 INSERT INTO `storeproject`.`staff`
 (
 `fName`,
@@ -173,7 +172,7 @@ INSERT INTO `storeproject`.`staff`
 `birthDate`,
 `bankAccountCode`,
 `managerID`)
-VALUES
+VALUES (
 "Elham",
 "Gholami",
 5000000,
@@ -190,4 +189,4 @@ VALUES
 "3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7",
 "1995-08-01",
 "098780000001254796242342",
-"0";
+"1");
