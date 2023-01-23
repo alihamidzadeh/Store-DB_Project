@@ -6,7 +6,7 @@ app = Flask("StoreDataBaseApi")
 
 app.config['MYSQL_HOST'] = "localhost"
 app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = "1414"
+app.config["MYSQL_PASSWORD"] = "root" #1414
 app.config["MYSQL_DATABASE"] = "StoreProject"
 
 mysql = MySQL(app)

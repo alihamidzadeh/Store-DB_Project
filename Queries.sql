@@ -105,3 +105,4 @@ where exists ( select * from StoreProject.Addresses a
 select *
 from StoreProject.Supplier s
 where s.address like "%Mashad%";
+
