@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `StoreProject` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
-USE `StoreProject`;
 -- MariaDB dump 10.19  Distrib 10.9.4-MariaDB, for Linux (x86_64)
 --
 -- Host: 127.0.0.1    Database: StoreProject
@@ -124,6 +122,7 @@ CREATE TABLE `Comments` (
   `text` varchar(500) DEFAULT NULL,
   `itemID` int(11) NOT NULL,
   `customerID` int(11) NOT NULL,
+  `score` int(11) DEFAULT NULL,
   PRIMARY KEY (`commentID`),
   KEY `fk_Comments_Item1_idx` (`itemID`),
   KEY `fk_Comments_Customer1_idx` (`customerID`),
@@ -688,4 +687,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-02-01 17:41:24
+-- Dump completed on 2023-02-01 17:48:20
