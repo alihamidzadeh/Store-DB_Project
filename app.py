@@ -1,56 +1,112 @@
 from flask import Flask, request, jsonify
 from flask_mysql_connector import MySQL
 import hashlib
+import string
+import random
 
 app = Flask("StoreDataBaseApi")
 
 app.config['MYSQL_HOST'] = "localhost"
 app.config["MYSQL_USER"] = "root"
+<<<<<<< HEAD
 app.config["MYSQL_PASSWORD"] = "1414"  # 1414
 app.config["MYSQL_DATABASE"] = "storeproject"
+=======
+app.config["MYSQL_PASSWORD"] = "root"  # 1414
+app.config["MYSQL_DATABASE"] = "StoreProject"
+>>>>>>> ef65e84 (Added login by session, logout by session, and getting user status)
 
 mysql = MySQL(app)
-user = None
-
+def get_user(token):
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute("select * from login where token=\"{}\"".format(token))
+    user = cursor.fetchall()
+    if len(user) == 1:
+        user = user[0]
+        if user["isStaff"] == 1:
+            cursor.execute("select * from Staff where staffID=\"{}\"".format(user["userID"]))
+        else:
+            cursor.execute("select * from Customer where staffID=\"{}\"".format(user["userID"]))
+        res = cursor.fetchall()
+        if len(res) == 1:
+            return res[0]
+        return None
+    else:
+        return None
+def get_user_is_admin(token):
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute("select * from login where token=\"{}\"".format(token))
+    user = cursor.fetchall()
+    if len(user) == 1:
+        user = user[0]
+        if user["isStaff"] == 1:
+            cursor.execute("select * from Staff where staffID=\"{}\" and managerID is null".format(user["userID"]))
+            res = cursor.fetchall()
+            if len(res) == 1:
+                return res[0]
+    return None
+def get_random_string(length):
+    letters = string.ascii_lowercase
+    result_str = ''.join(random.choice(letters) for i in range(length))
+    return result_str
 
 @app.route('/login/<username>/<pwd>')  # pwd == 123example
 def login(username, pwd):
-    global user
     rsp = ""
-    if not user:
-        cursor = mysql.connection.cursor(dictionary=True)
-        cursor.execute("select * from Staff where userName=\"{}\"".format(username))
+    isStaff = 1 
+    user = None
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute("select * from Staff where userName=\"{}\"".format(username))
+    res = cursor.fetchall()
+    if len(res) > 1:
+        rsp = "Two users with same username"
+    elif len(res) == 0:
+        isStaff = 0 
+        cursor.execute("select * from Customer where userName =\"{}\"".format(username))
         res = cursor.fetchall()
-        if len(res) > 1 or len(res) == 0:
-            rsp = "Two users with same username or wrong username!"
-        else:
-            user = res[0]
-            password = user['password']
-            pwdhash = hashlib.sha256(pwd.encode('utf-8')).hexdigest()
-            if pwdhash == password:
-                # rsp = "Logged in successfully!"
-                cursor.execute("select * from Staff")
-                rsp = cursor.fetchall()
-
+    if len(res) == 0:
+        rsp = "No user found!"
+    elif len(res) == 1:
+        user = res[0]
+        password = user['password']
+        pwdhash = hashlib.sha256(pwd.encode('utf-8')).hexdigest()
+        if pwdhash == password:
+            ID = None
+            if isStaff == 1:
+                ID = user["staffID"] 
             else:
-                rsp = "Incorrect Password!"
+                ID = user["customerID"]
+            cursor.execute("select * from login where userID=\"{}\"".format(ID));
+            isLogedIn = len(cursor.fetchall()) == 1
+            if not isLogedIn:
+                rsp = get_random_string(256)
+                print("insert into login values (\"{}\", {}, {})".format(rsp,ID,isStaff))
+                cursor.execute("insert into login values (\"{}\", {}, {})".format(rsp,ID,isStaff))
+                mysql.connection.commit()
+            else:
+                rsp = "You're Loged in!"
+        else:
+            rsp = "Incorrect Password!"
+
         cursor.close()
     else:
         rsp = "You're logged in! please logout to login!"
-    return rsp
-
+    return rsp 
 
 @app.route('/logout')
 def logout():
-    global user
     rsp = ""
-    if not user:
-        rsp = "You're not logged in!"
+    token = request.form["token"];
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute("select * from login where token=\"{}\"".format(token))
+    res = cursor.fetchall()
+    if len(res) != 1:
+        rsp = "Not Loged In!"
     else:
-        user = None
-        rsp = "logged out successfully!"
+        cursor.execute("delete from login where token=\"{}\"".format(token))
+        mysql.connection.commit()
+        rsp = "Loged out!"
     return rsp
-
 
 @app.route('/get-all-items')
 def get_all_items():
@@ -73,38 +129,27 @@ def get_unique_categories():
 
 @app.route('/get-all-orders')
 def get_all_orders():
-    global user
-
-    if not user:
-        return "You're not logged in!"
-
-    if user['role'] != 'Manager':
-        return 'You dont have permission'
-
-    cursor = mysql.connection.cursor(dictionary=True)
-    cursor.execute("select * from StoreProject.`Order`")
-    rsp = cursor.fetchall()
-    cursor.close()
-
+    rsp = "Not logged in or you dont have permession!"
+    if get_user_is_admin(request.form["token"]) != None:
+        cursor = mysql.connection.cursor(dictionary=True)
+        cursor.execute("select * from StoreProject.`Order`")
+        rsp = cursor.fetchall()
+        cursor.close()
     return rsp
 
 
 @app.route('/get-suppliers/<item_id>')
 def get_suppliers(item_id):
-    global user
-
-    if not user:
-        return "You're not logged in!"
-
-    cursor = mysql.connection.cursor(dictionary=True)
-    cursor.execute("""
-    select * from item, supplier, supplier_supplies_item 
-    where item.itemID = %s 
-    and supplier_supplies_item.Item_itemID = item.itemID 
-    and supplier.supplierID = supplier_supplies_item.Supplier_supplierID""", (item_id,))
-
-    res = cursor.fetchall()
-    cursor.close()
+    res = "Not logged in!"
+    if get_user(request.form["token"]) != None:
+        cursor = mysql.connection.cursor(dictionary=True)
+        cursor.execute("""
+        select * from item, supplier, supplier_supplies_item 
+        where item.itemID = %s 
+        and supplier_supplies_item.Item_itemID = item.itemID 
+        and supplier.supplierID = supplier_supplies_item.Supplier_supplierID""", (item_id,))
+        res = cursor.fetchall()
+        cursor.close()
 
     return res
 
@@ -144,63 +189,41 @@ def get_comments(item_id):
 
 @app.route('/get-done-average-price')
 def get_done_average_price():
-    global user
-
-    if not user:
-        return "You're not logged in!"
-
-    if user['role'] != 'Manager':
-        return 'You dont have permission'
-
-    cursor = mysql.connection.cursor(dictionary=True)
-    cursor.execute('select avg(totalPrice) from StoreProject.`Order` o where o.`status` = "Done"')
-    rsp = cursor.fetchall()
-    cursor.close()
-
+    rsp = "Not logged in or you dont have permession!"
+    if get_user_is_admin(request.form["token"]) != None:
+        cursor = mysql.connection.cursor(dictionary=True)
+        cursor.execute('select avg(totalPrice) from StoreProject.`Order` o where o.`status` = "Done"')
+        rsp = cursor.fetchall()
+        cursor.close()
     return rsp
 
 
 @app.route('/get-customers-by-city/<city>')
 def get_customers_by_city(city):
-    global user
+    rsp = "Not logged in or you dont have permession!"
+    if get_user_is_admin(request.form["token"]) != None:
+        cursor = mysql.connection.cursor(dictionary=True)
+        cursor.execute("""
+        select * from StoreProject.Customer c
+        where exists ( select * from StoreProject.Addresses a where a.customerID = c.customerID and a.city = %s)""",
+                       (city,))
 
-    if not user:
-        return "You're not logged in!"
-
-    if user['role'] != 'Manager':
-        return 'You dont have permission'
-
-    cursor = mysql.connection.cursor(dictionary=True)
-    cursor.execute("""
-    select * from StoreProject.Customer c
-    where exists ( select * from StoreProject.Addresses a where a.customerID = c.customerID and a.city = %s)""",
-                   (city,))
-
-    rsp = cursor.fetchall()
-    cursor.close()
-
+        rsp = cursor.fetchall()
+        cursor.close()
     return rsp
 
 
 @app.route('/get-suppliers-by-city/<city>')
 def get_suppliers_by_city(city):
-    global user
-
-    if not user:
-        return "You're not logged in!"
-
-    if user['role'] != 'Manager':
-        return 'You dont have permission'
-
-    cursor = mysql.connection.cursor(dictionary=True)
-    cursor.execute('''
-    select *
-    from StoreProject.Supplier s
-    where s.address like %s ''', ('%' + city + '%',))
-
-    rsp = cursor.fetchall()
-    cursor.close()
-
+    rsp = "Not logged in or you dont have permession!"
+    if get_user_is_admin(request.form["token"]) != None:
+        cursor = mysql.connection.cursor(dictionary=True)
+        cursor.execute('''
+        select *
+        from StoreProject.Supplier s
+        where s.address like %s ''', ('%' + city + '%',))
+        rsp = cursor.fetchall()
+        cursor.close()
     return rsp
 
 
