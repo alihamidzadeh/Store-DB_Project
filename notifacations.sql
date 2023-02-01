@@ -1,9 +1,3 @@
-title varchar(100) 
-text varchar(500) 
-date datetime 
-for varchar(45) 
-customerID int 
-staffID int
 
 INSERT INTO
     `StoreProject`.`notifications` (
