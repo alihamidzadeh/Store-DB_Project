@@ -8,13 +8,8 @@ app = Flask("StoreDataBaseApi")
 
 app.config['MYSQL_HOST'] = "localhost"
 app.config["MYSQL_USER"] = "root"
-<<<<<<< HEAD
-app.config["MYSQL_PASSWORD"] = "1414"  # 1414
-app.config["MYSQL_DATABASE"] = "storeproject"
-=======
 app.config["MYSQL_PASSWORD"] = "root"  # 1414
 app.config["MYSQL_DATABASE"] = "StoreProject"
->>>>>>> ef65e84 (Added login by session, logout by session, and getting user status)
 
 mysql = MySQL(app)
 def get_user(token):
