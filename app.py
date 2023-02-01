@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_mysql_connector import MySQL
 import hashlib
 
@@ -6,7 +6,7 @@ app = Flask("StoreDataBaseApi")
 
 app.config['MYSQL_HOST'] = "localhost"
 app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = ""  # 1414
+app.config["MYSQL_PASSWORD"] = "1414"  # 1414
 app.config["MYSQL_DATABASE"] = "storeproject"
 
 mysql = MySQL(app)
@@ -202,6 +202,105 @@ def get_suppliers_by_city(city):
     cursor.close()
 
     return rsp
+
+
+@app.route('/productList')
+def productList():
+    query = 'select * from item;'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'Product List': result})
+
+
+@app.route('/userList')
+def userList():
+    query = 'select * from customer;'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'User List': result})
+
+
+@app.route('/categoryList')
+def categoryList():
+    query = 'select distinct category from item;'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'Category List': result})
+
+
+@app.route('/orderList')
+def orderList():
+    query = 'select * from StoreProject.`Order`;'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'Order List': result})
+
+
+@app.route('/getTenBetterUser')
+def tenBetterUserList():
+    query = 'select customerID, fName, lName, phoneNumber, ssn, userName, score '
+    query += 'from customer '
+    query += 'order by score desc '
+    query += 'limit 10;'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'User List': result})
+
+
+@app.route('/bestSellerItemsList')
+def bestSellerItemsList():
+    query = 'select * '
+    query += 'from item '
+    query += 'order by score desc '
+    query += 'limit 5;'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'Item List': result})
+
+
+@app.route('/specialOfferList')
+def specialOfferList():
+    query = 'select itemID, name, currentPrice, category, offer '
+    query += 'from item '
+    query += 'where offer >= 15;'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'Item List': result})
+
+
+@app.route('/supplierList/<itemId>')
+def supplierList(itemId):
+    query = 'select * '
+    query += 'from item, supplier, supplier_supplies_item '
+    query += f'where item.itemID = {itemId} -- given value '  # TODO change itemId to itemName
+    query += 'and supplier_supplies_item.Item_itemID = item.itemID '
+    query += 'and supplier.supplierID = supplier_supplies_item.Supplier_supplierID; '
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'Supplier List': result})
+
+
+@app.route('/cheapestSeller/<itemId>')
+def cheapestSellerList(itemId):
+    query = 'select * '
+    query += 'from item, supplier, supplier_supplies_item '
+    query += f'where item.itemID = {itemId} -- given value '
+    query += 'and supplier_supplies_item.Item_itemID = item.itemID '
+    query += 'and supplier.supplierID = supplier_supplies_item.Supplier_supplierID '
+    query += 'order by item.currentPrice desc '
+    query += 'limit 1;'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'Seller List': result})
 
 
 if __name__ == '__main__':
