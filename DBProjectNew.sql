@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `StoreProject` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
+USE `StoreProject`;
 -- MariaDB dump 10.19  Distrib 10.9.4-MariaDB, for Linux (x86_64)
 --
 -- Host: 127.0.0.1    Database: StoreProject
@@ -161,6 +163,7 @@ CREATE TABLE `Customer` (
   `score` int(11) NOT NULL,
   `referenceID` int(11) DEFAULT NULL,
   PRIMARY KEY (`customerID`),
+  UNIQUE KEY `userName` (`userName`),
   KEY `fk_Customer_Customer1_idx` (`referenceID`),
   CONSTRAINT `fk_Customer_Customer1` FOREIGN KEY (`referenceID`) REFERENCES `Customer` (`customerID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -411,12 +414,13 @@ CREATE TABLE `Staff` (
   `insuranceCode` varchar(45) NOT NULL,
   `postalCode` varchar(10) NOT NULL,
   `email` varchar(50) NOT NULL,
-  `userName` varchar(50) NOT NULL,
+  `userName` varchar(45) NOT NULL,
   `password` varchar(256) NOT NULL,
   `birthDate` date DEFAULT NULL,
   `bankAccountCode` varchar(24) NOT NULL,
   `managerID` int(11) DEFAULT NULL,
   PRIMARY KEY (`staffID`),
+  UNIQUE KEY `userName` (`userName`),
   KEY `fk_Staff_Staff1_idx` (`managerID`),
   CONSTRAINT `fk_Staff_Staff1` FOREIGN KEY (`managerID`) REFERENCES `Staff` (`staffID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -654,6 +658,7 @@ DROP TABLE IF EXISTS `login`;
 CREATE TABLE `login` (
   `token` varchar(256) NOT NULL,
   `userID` int(11) NOT NULL,
+  `isStaff` int(1) NOT NULL,
   PRIMARY KEY (`token`,`userID`),
   UNIQUE KEY `token_UNIQUE` (`token`),
   KEY `fk_login_Staff1_idx` (`userID`),
@@ -669,14 +674,6 @@ LOCK TABLES `login` WRITE;
 /*!40000 ALTER TABLE `login` DISABLE KEYS */;
 /*!40000 ALTER TABLE `login` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Dumping events for database 'StoreProject'
---
-
---
--- Dumping routines for database 'StoreProject'
---
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -687,4 +684,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-02-01 17:48:20
+-- Dump completed on 2023-02-01 18:12:27
