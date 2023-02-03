@@ -44,27 +44,36 @@ def get_random_string(length):
     letters = string.ascii_lowercase
     result_str = ''.join(random.choice(letters) for i in range(length))
     return result_str
-@app.route('/register/staff')
-def staffRegister():
+@app.route('/register/<userType>')
+def register(userType):
+    table = ""
+    if userType.lower() == "customer":
+        table = "Customer"
+    elif userType.lower() == "staff":
+        table = "Staff"
+    else:
+        return "Invalid type!"
     data = list(request.form.values())
     keys = list(request.form.keys())
-    query = "insert into Staff("
+    query = "insert into {}(".format(table)
     for key in keys:
         query += key
         if keys.index(key) != len(keys) - 1:
             query += ","
     query += ") values ("
     for dt in data:
+        val = None
         if keys[data.index(dt)] == "password":
-            query += "\"{}\"".format(hashlib.sha256(dt.encode('utf-8')).hexdigest())
+            val = hashlib.sha256(dt.encode('utf-8')).hexdigest()
         else:
-            query += "\"{}\"".format(dt)
+            val = dt
+        query += "\"{}\"".format(val)
         if data.index(dt) != len(data) -1:
             query += ','
     query += ")"
     mysql.connection.cursor().execute(query)
     mysql.connection.commit()
-    return "Registerd!"
+    return "Registerd!" 
 @app.route('/login/<username>/<pwd>')  # pwd == 123example
 def login(username, pwd):
     rsp = ""
