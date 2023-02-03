@@ -44,7 +44,27 @@ def get_random_string(length):
     letters = string.ascii_lowercase
     result_str = ''.join(random.choice(letters) for i in range(length))
     return result_str
-
+@app.route('/register/staff')
+def staffRegister():
+    data = list(request.form.values())
+    keys = list(request.form.keys())
+    query = "insert into Staff("
+    for key in keys:
+        query += key
+        if keys.index(key) != len(keys) - 1:
+            query += ","
+    query += ") values ("
+    for dt in data:
+        if keys[data.index(dt)] == "password":
+            query += "\"{}\"".format(hashlib.sha256(dt.encode('utf-8')).hexdigest())
+        else:
+            query += "\"{}\"".format(dt)
+        if data.index(dt) != len(data) -1:
+            query += ','
+    query += ")"
+    mysql.connection.cursor().execute(query)
+    mysql.connection.commit()
+    return "Registerd!"
 @app.route('/login/<username>/<pwd>')  # pwd == 123example
 def login(username, pwd):
     rsp = ""
