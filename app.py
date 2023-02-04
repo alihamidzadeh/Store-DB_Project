@@ -357,32 +357,39 @@ def specialOfferList():
     return jsonify({'Item List': result})
 
 
-@app.route('/supplierList/<itemId>') # TODO Just for admin
+@app.route('/supplierList/<itemId>') 
 def supplierList(itemId):
-    query = 'select * '
-    query += 'from item, supplier, supplier_supplies_item '
-    query += 'where supplier_supplies_item.Item_itemID = item.itemID '
-    query += 'and supplier.supplierID = supplier_supplies_item.Supplier_supplierID '
-    query += 'and item.itemID = {}'.format(itemId)
-    cursor = mysql.connection.cursor(dictionary=True)
-    cursor.execute(query)
-    result = cursor.fetchall()
-    return jsonify({"Supplier List": result})
+    rsp = "Not logged in or you dont have permession!"
+    if get_user_is_admin(request.form["token"]) != None:
+        query = 'select * '
+        query += 'from item, supplier, supplier_supplies_item '
+        query += 'where supplier_supplies_item.Item_itemID = item.itemID '
+        query += 'and supplier.supplierID = supplier_supplies_item.Supplier_supplierID '
+        query += 'and item.itemID = {}'.format(itemId)
+        cursor = mysql.connection.cursor(dictionary=True)
+        cursor.execute(query)
+        result = cursor.fetchall()
+        rsp = jsonify({"Supplier List": result})
+        cursor.close()
+    return rsp
 
 
-@app.route('/cheapestSeller/<itemId>')# TODO Just for admin
+@app.route('/cheapestSeller/<itemId>')
 def cheapestSellerList(itemId):
-    query = 'select * '
-    query += 'from item, supplier, supplier_supplies_item '
-    query += 'where supplier_supplies_item.Item_itemID = item.itemID '
-    query += 'and supplier.supplierID = supplier_supplies_item.Supplier_supplierID '
-    query += 'and item.itemID = \"{}\"'.format(itemId)
-    query += 'order by item.currentPrice desc '
-    query += 'limit 1'
-    cursor = mysql.connection.cursor(dictionary=True)
-    cursor.execute(query)
-    result = cursor.fetchall()
-    return jsonify({'seller list': result})
+    rsp = "Not logged in or you dont have permession!"
+    if get_user_is_admin(request.form["token"]) != None:
+        query = 'select * '
+        query += 'from item, supplier, supplier_supplies_item '
+        query += 'where supplier_supplies_item.Item_itemID = item.itemID '
+        query += 'and supplier.supplierID = supplier_supplies_item.Supplier_supplierID '
+        query += 'and item.itemID = \"{}\"'.format(itemId)
+        query += 'order by item.currentPrice desc '
+        query += 'limit 1'
+        cursor = mysql.connection.cursor(dictionary=True)
+        cursor.execute(query)
+        result = cursor.fetchall()
+        rsp = jsonify({'seller list': result})
+    return rsp
 
 
 @app.route('/lastTenOrder/<UserId>')
@@ -440,29 +447,36 @@ def showThreeWorstComments(itemId):
 
 @app.route('/quantitySellItem/<itemId>')  # TODO Just for admin
 def quantitySellItem(itemId):
-    query = 'SELECT sum(quantity) '
-    query += 'FROM StoreProject.`Order_has_Item` rls '
-    query += 'WHERE rls.Item_itemID = 1 '
-    query += 'AND exists ( select * '
-    query += 'FROM StoreProject.`Order` o '
-    query += 'WHERE o.orderID = rls.Order_orderID '
-    query += 'AND o.status = \"Done\" '
-    query += 'AND month(o.orderDate) = 6 );'
-    cursor = mysql.connection.cursor(dictionary=True)
-    cursor.execute(query)
-    result = cursor.fetchall()
-    return jsonify({'Quantity of Sell ': result})
+    rsp = "Not logged in or you dont have permession!"
+    if get_user_is_admin(request.form["token"]) != None:
+        query = 'SELECT sum(quantity) '
+        query += 'FROM StoreProject.`Order_has_Item` rls '
+        query += 'WHERE rls.Item_itemID = 1 '
+        query += 'AND exists ( select * '
+        query += 'FROM StoreProject.`Order` o '
+        query += 'WHERE o.orderID = rls.Order_orderID '
+        query += 'AND o.status = \"Done\" '
+        query += 'AND month(o.orderDate) = 6 );'
+        cursor = mysql.connection.cursor(dictionary=True)
+        cursor.execute(query)
+        result = cursor.fetchall()
+        rsp = jsonify({'Quantity of Sell ': result})
+        cursor.close()
+    return rsp
 
 
 @app.route('/AverageOfSell')  # TODO Just for admin
 def AverageOfSell():
-    query = 'select avg(totalPrice) '
-    query += 'from StoreProject.`Order` o '
-    query += 'where o.`status` = \"Done\";'
-    cursor = mysql.connection.cursor(dictionary=True)
-    cursor.execute(query)
-    result = cursor.fetchall()
-    return jsonify({'Ave Sell ': result})
+    rsp = "Not logged in or you dont have permession!"
+    if get_user_is_admin(request.form["token"]) != None:
+        query = 'select avg(totalPrice) '
+        query += 'from StoreProject.`Order` o '
+        query += 'where o.`status` = \"Done\";'
+        cursor = mysql.connection.cursor(dictionary=True)
+        cursor.execute(query)
+        result = cursor.fetchall()
+        rsp = jsonify({'Ave Sell ': result})
+    return rsp
 
 
 @app.route('/SameCityUserList/<cityName>')
