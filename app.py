@@ -100,7 +100,7 @@ def login(username, pwd):
                 ID = user["staffID"] 
             else:
                 ID = user["customerID"]
-            cursor.execute("select * from login where userID=\"{}\"".format(ID));
+            cursor.execute("select * from login where userID=\"{}\" and isStaff=\"{}\"".format(ID,isStaff));
             isLogedIn = len(cursor.fetchall()) == 1
             if not isLogedIn:
                 rsp = get_random_string(256)
@@ -180,20 +180,21 @@ def get_suppliers(item_id):
 
 @app.route('/get-best-supplier/<item_id>')
 def get_best_supplier(item_id):
-    cursor = mysql.connection.cursor(dictionary=True)
-    cursor.execute("""
-    select *
-    from Item, Supplier, Supplier_supplies_Item
-    where Item.itemID = %s
-    and Supplier_supplies_Item.Item_itemID = Item.itemID
-    and Supplier.supplierID = Supplier_supplies_Item.Supplier_supplierID
-    order by Item.currentPrice desc
-    limit 1""", (item_id,))
+    rsp = "Not logged in or you dont have permession!"
+    if get_user_is_admin(request.form["token"]) != None:
+        cursor = mysql.connection.cursor(dictionary=True)
+        cursor.execute("""
+        select *
+        from Item, Supplier, Supplier_supplies_Item
+        where Item.itemID = %s
+        and Supplier_supplies_Item.Item_itemID = Item.itemID
+        and Supplier.supplierID = Supplier_supplies_Item.Supplier_supplierID
+        order by Item.currentPrice desc
+        limit 1""", (item_id,))
 
-    res = cursor.fetchall()
-    cursor.close()
-
-    return res
+        rsp = cursor.fetchall()
+        cursor.close()
+    return rsp
 
 
 @app.route('/get-comments/<item_id>')
@@ -257,17 +258,21 @@ def productList():
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute(query)
     result = cursor.fetchall()
+    cursor.close()
     return jsonify({'Product List': result})
 
 
 @app.route('/userList')
 def userList():
-    query = 'select * from Customer'
-    cursor = mysql.connection.cursor(dictionary=True)
-    cursor.execute(query)
-    result = cursor.fetchall()
-    return jsonify({'User List': result})
-
+    rsp = "Not logged in or you dont have permession!"
+    if get_user_is_admin(request.form["token"]) != None:
+        query = 'select * from Customer'
+        cursor = mysql.connection.cursor(dictionary=True)
+        cursor.execute(query)
+        result = cursor.fetchall()
+        rsp = jsonify({'User List': result})
+        cursor.close()
+    return rsp
 
 @app.route('/categoryList')
 def categoryList():
@@ -286,7 +291,21 @@ def orderList():
     result = cursor.fetchall()
     return jsonify({'Order List': result})
 
-
+@app.route('/userOrderList')
+def userOrderList():
+    rsp = "Not logged in!"
+    if get_user(request.form["token"]) != None:
+        user = get_user(request.form["token"])
+        cursor = mysql.connection.cursor(dictionary=True)
+        query = ""
+        if "customerID" in list(user.keys()):
+            query = "select * from `Order` where customerID = {}".format(user["customerID"])
+        else:
+            query = "select * from `Order`"
+        cursor.execute(query)
+        rsp = cursor.fetchall()
+        cursor.close()
+    return rsp
 @app.route('/getTenBetterUser')
 def tenBetterUserList():
     query = 'select customerID, fName, lName, phoneNumber, ssn, userName, score '
