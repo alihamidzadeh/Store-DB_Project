@@ -169,9 +169,9 @@ def get_suppliers(item_id):
         cursor = mysql.connection.cursor(dictionary=True)
         cursor.execute("""
         select * from Item, Supplier, Supplier_supplies_Item 
-        where item.itemID = %s 
-        and supplier_supplies_item.Item_itemID = item.itemID 
-        and supplier.supplierID = supplier_supplies_item.Supplier_supplierID""", (item_id,))
+        where Item.itemID = %s 
+        and Supplier_supplies_Item.Item_itemID = Item.itemID 
+        and Supplier.supplierID = Supplier_supplies_Item.Supplier_supplierID""", (item_id,))
         res = cursor.fetchall()
         cursor.close()
 
@@ -184,10 +184,10 @@ def get_best_supplier(item_id):
     cursor.execute("""
     select *
     from Item, Supplier, Supplier_supplies_Item
-    where item.itemID = %s
-    and supplier_supplies_item.Item_itemID = item.itemID
-    and supplier.supplierID = supplier_supplies_item.Supplier_supplierID
-    order by item.currentPrice desc
+    where Item.itemID = %s
+    and Supplier_supplies_Item.Item_itemID = Item.itemID
+    and Supplier.supplierID = Supplier_supplies_Item.Supplier_supplierID
+    order by Item.currentPrice desc
     limit 1""", (item_id,))
 
     res = cursor.fetchall()
@@ -200,10 +200,10 @@ def get_best_supplier(item_id):
 def get_comments(item_id):
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute("""
-    SELECT comments.commentID, comments.title, comments.date, comments.text, comments.itemID, comments.customerID
+    SELECT Comments.commentID, Comments.title, Comments.date, Comments.text, Comments.itemID, Comments.customerID
     FROM Item 
-    INNER JOIN comments ON comments.itemID = item.itemID
-    WHERE comments.itemID = %s """, (item_id,))
+    INNER JOIN Comments ON Comments.itemID = Item.itemID
+    WHERE Comments.itemID = %s """, (item_id,))
 
     res = cursor.fetchall()
     cursor.close()
