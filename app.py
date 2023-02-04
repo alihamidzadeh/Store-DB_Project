@@ -242,7 +242,7 @@ def get_customers_by_city(city):
         cursor = mysql.connection.cursor(dictionary=True)
         cursor.execute("""
         select * from customer c
-        where exists ( select * from Addresses a where a.customerID = c.customerID and a.city = %s)""",
+        where exists ( select * from addresses a where a.customerID = c.customerID and a.city = %s)""",
                        (city,))
 
         rsp = cursor.fetchall()
@@ -257,7 +257,7 @@ def get_suppliers_by_city(city):
         cursor = mysql.connection.cursor(dictionary=True)
         cursor.execute('''
         select *
-        from Supplier s
+        from supplier s
         where s.address like %s ''', ('%' + city + '%',))
         rsp = cursor.fetchall()
         cursor.close()
@@ -392,17 +392,21 @@ def cheapestSellerList(itemId):
     return rsp
 
 
-@app.route('/lastTenOrder/<UserId>')
-def lastTenOrder(UserId):
-    query = 'SELECT * '
-    query += 'from StoreProject.`Order` '
-    query += f'where customerID = {UserId} '
-    query += 'ORDER BY orderDate DESC '
-    query += 'limit 10;'
-    cursor = mysql.connection.cursor(dictionary=True)
-    cursor.execute(query)
-    result = cursor.fetchall()
-    return jsonify({'Order ': result})
+@app.route('/lastTenOrder')
+def lastTenOrder():
+    user = get_user(request.form["token"])
+    rsp = "Not logged in!"
+    if user != None and "customerID" in user.keys():
+        query = 'SELECT * '
+        query += 'from `order` '
+        query += 'where customerID = "{}" '.format(user["customerID"])
+        query += 'ORDER BY orderDate DESC '
+        query += 'limit 10;'
+        cursor = mysql.connection.cursor(dictionary=True)
+        cursor.execute(query)
+        result = cursor.fetchall()
+        rsp = jsonify({'Order ': result})
+    return rsp
 
 
 @app.route('/productComments/<itemId>')
@@ -450,10 +454,10 @@ def quantitySellItem(itemId):
     rsp = "Not logged in or you dont have permession!"
     if get_user_is_admin(request.form["token"]) != None:
         query = 'SELECT sum(quantity) '
-        query += 'FROM StoreProject.`Order_has_Item` rls '
+        query += 'FROM `order_has_item` rls '
         query += 'WHERE rls.Item_itemID = 1 '
         query += 'AND exists ( select * '
-        query += 'FROM StoreProject.`Order` o '
+        query += 'FROM `order` o '
         query += 'WHERE o.orderID = rls.Order_orderID '
         query += 'AND o.status = \"Done\" '
         query += 'AND month(o.orderDate) = 6 );'
@@ -465,12 +469,12 @@ def quantitySellItem(itemId):
     return rsp
 
 
-@app.route('/AverageOfSell')  # TODO Just for admin
+@app.route('/AverageOfSell') 
 def AverageOfSell():
     rsp = "Not logged in or you dont have permession!"
     if get_user_is_admin(request.form["token"]) != None:
         query = 'select avg(totalPrice) '
-        query += 'from StoreProject.`Order` o '
+        query += 'from  `order` o '
         query += 'where o.`status` = \"Done\";'
         cursor = mysql.connection.cursor(dictionary=True)
         cursor.execute(query)
@@ -481,7 +485,7 @@ def AverageOfSell():
 
 @app.route('/SameCityUserList/<cityName>')
 def SameCityUserList(cityName):
-    query = 'select * from StoreProject.Customer c '
+    query = 'select * from customer c '
     query += 'where exists ( select * from StoreProject.Addresses a '
     query += 'where a.customerID = c.customerID '
     query += f'and a.city = {cityName});'
@@ -494,7 +498,7 @@ def SameCityUserList(cityName):
 @app.route('/SameCitySupplier/<cityName>')
 def SameCitySupplier(cityName):
     query = 'select * '
-    query += 'from StoreProject.Supplier s '
+    query += 'from supplier s '
     query += f'where s.address like "%{cityName}%";'
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute(query)
