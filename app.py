@@ -12,6 +12,8 @@ app.config["MYSQL_PASSWORD"] = "root"  # 1414
 app.config["MYSQL_DATABASE"] = "storeproject"
 
 mysql = MySQL(app)
+
+
 def get_user(token):
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute("select * from login where token=\"{}\"".format(token))
@@ -28,6 +30,8 @@ def get_user(token):
         return None
     else:
         return None
+
+
 def get_user_is_admin(token):
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute("select * from login where token=\"{}\"".format(token))
@@ -40,10 +44,14 @@ def get_user_is_admin(token):
             if len(res) == 1:
                 return res[0]
     return None
+
+
 def get_random_string(length):
     letters = string.ascii_lowercase
     result_str = ''.join(random.choice(letters) for i in range(length))
     return result_str
+
+
 @app.route('/register/<userType>')
 def register(userType):
     table = ""
@@ -68,16 +76,18 @@ def register(userType):
         else:
             val = dt
         query += "\"{}\"".format(val)
-        if data.index(dt) != len(data) -1:
+        if data.index(dt) != len(data) - 1:
             query += ','
     query += ")"
     mysql.connection.cursor().execute(query)
     mysql.connection.commit()
-    return "Registerd!" 
+    return "Registerd!"
+
+
 @app.route('/login/<username>/<pwd>')  # pwd == 123example
 def login(username, pwd):
     rsp = ""
-    isStaff = 1 
+    isStaff = 1
     user = None
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute("select * from staff where userName=\"{}\"".format(username))
@@ -85,7 +95,7 @@ def login(username, pwd):
     if len(res) > 1:
         rsp = "Two users with same username"
     elif len(res) == 0:
-        isStaff = 0 
+        isStaff = 0
         cursor.execute("select * from customer where userName =\"{}\"".format(username))
         res = cursor.fetchall()
     if len(res) == 0:
@@ -97,15 +107,15 @@ def login(username, pwd):
         if pwdhash == password:
             ID = None
             if isStaff == 1:
-                ID = user["staffID"] 
+                ID = user["staffID"]
             else:
                 ID = user["customerID"]
-            cursor.execute("select * from login where userID=\"{}\" and isStaff=\"{}\"".format(ID,isStaff));
+            cursor.execute("select * from login where userID=\"{}\" and isStaff=\"{}\"".format(ID, isStaff));
             isLogedIn = len(cursor.fetchall()) == 1
             if not isLogedIn:
                 rsp = get_random_string(256)
-                print("insert into login values (\"{}\", {}, {})".format(rsp,ID,isStaff))
-                cursor.execute("insert into login values (\"{}\", {}, {})".format(rsp,ID,isStaff))
+                print("insert into login values (\"{}\", {}, {})".format(rsp, ID, isStaff))
+                cursor.execute("insert into login values (\"{}\", {}, {})".format(rsp, ID, isStaff))
                 mysql.connection.commit()
             else:
                 rsp = "You're Loged in!"
@@ -115,7 +125,8 @@ def login(username, pwd):
         cursor.close()
     else:
         rsp = "You're logged in! please logout to login!"
-    return rsp 
+    return rsp
+
 
 @app.route('/logout')
 def logout():
@@ -131,6 +142,7 @@ def logout():
         mysql.connection.commit()
         rsp = "Loged out!"
     return rsp
+
 
 @app.route('/get-all-items')
 def get_all_items():
@@ -274,6 +286,7 @@ def userList():
         cursor.close()
     return rsp
 
+
 @app.route('/categoryList')
 def categoryList():
     query = 'select distinct category from item'
@@ -291,6 +304,7 @@ def orderList():
     result = cursor.fetchall()
     return jsonify({'Order List': result})
 
+
 @app.route('/userOrderList')
 def userOrderList():
     rsp = "Not logged in!"
@@ -306,6 +320,8 @@ def userOrderList():
         rsp = cursor.fetchall()
         cursor.close()
     return rsp
+
+
 @app.route('/getTenBetterUser')
 def tenBetterUserList():
     query = 'select customerID, fName, lName, phoneNumber, ssn, userName, score '
@@ -341,7 +357,7 @@ def specialOfferList():
     return jsonify({'Item List': result})
 
 
-@app.route('/supplierList/<itemId>')
+@app.route('/supplierList/<itemId>') # TODO Just for admin
 def supplierList(itemId):
     query = 'select * '
     query += 'from item, supplier, supplier_supplies_item '
@@ -352,9 +368,9 @@ def supplierList(itemId):
     cursor.execute(query)
     result = cursor.fetchall()
     return jsonify({"Supplier List": result})
- 
 
-@app.route('/cheapestSeller/<itemId>')
+
+@app.route('/cheapestSeller/<itemId>')# TODO Just for admin
 def cheapestSellerList(itemId):
     query = 'select * '
     query += 'from item, supplier, supplier_supplies_item '
@@ -367,6 +383,109 @@ def cheapestSellerList(itemId):
     cursor.execute(query)
     result = cursor.fetchall()
     return jsonify({'seller list': result})
+
+
+@app.route('/lastTenOrder/<UserId>')
+def lastTenOrder(UserId):
+    query = 'SELECT * '
+    query += 'from StoreProject.`Order` '
+    query += f'where customerID = {UserId} '
+    query += 'ORDER BY orderDate DESC '
+    query += 'limit 10;'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'Order ': result})
+
+
+@app.route('/productComments/<itemId>')
+def productComments(itemId):
+    query = 'SELECT comments.commentID, comments.title, comments.date, comments.text, comments.itemID, comments.customerID '
+    query += 'FROM item '
+    query += 'INNER JOIN comments ON comments.itemID = item.itemID '
+    query += f'WHERE comments.itemID = {itemId};'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'Comment ': result})
+
+
+@app.route('/showThreeBestComments/<itemId>')
+def showThreeBestComments(itemId):
+    query = ' SELECT comments.commentID, comments.title, comments.date, comments.text, comments.itemID, comments.customerID '
+    query += 'FROM item '
+    query += 'INNER JOIN comments ON comments.itemID = item.itemID '
+    query += f'WHERE comments.itemID = {itemId} '
+    query += 'order by comments.score desc '
+    query += 'limit 3;'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'Comment ': result})
+
+
+@app.route('/showThreeWorstComments/<itemId>')
+def showThreeWorstComments(itemId):
+    query = ' SELECT comments.commentID, comments.title, comments.date, comments.text, comments.itemID, comments.customerID '
+    query += 'FROM item '
+    query += 'INNER JOIN comments ON comments.itemID = item.itemID '
+    query += 'WHERE comments.itemID = {itemId} '
+    query += 'order by comments.score asc '
+    query += 'limit 3;'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'Comment ': result})
+
+
+@app.route('/quantitySellItem/<itemId>')  # TODO Just for admin
+def quantitySellItem(itemId):
+    query = 'SELECT sum(quantity) '
+    query += 'FROM StoreProject.`Order_has_Item` rls '
+    query += 'WHERE rls.Item_itemID = 1 '
+    query += 'AND exists ( select * '
+    query += 'FROM StoreProject.`Order` o '
+    query += 'WHERE o.orderID = rls.Order_orderID '
+    query += 'AND o.status = \"Done\" '
+    query += 'AND month(o.orderDate) = 6 );'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'Quantity of Sell ': result})
+
+
+@app.route('/AverageOfSell')  # TODO Just for admin
+def AverageOfSell():
+    query = 'select avg(totalPrice) '
+    query += 'from StoreProject.`Order` o '
+    query += 'where o.`status` = \"Done\";'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'Ave Sell ': result})
+
+
+@app.route('/SameCityUserList/<cityName>')
+def SameCityUserList(cityName):
+    query = 'select * from StoreProject.Customer c '
+    query += 'where exists ( select * from StoreProject.Addresses a '
+    query += 'where a.customerID = c.customerID '
+    query += f'and a.city = {cityName});'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'User List ': result})
+
+
+@app.route('/SameCitySupplier/<cityName>')
+def SameCitySupplier(cityName):
+    query = 'select * '
+    query += 'from StoreProject.Supplier s '
+    query += f'where s.address like "%{cityName}%";'
+    cursor = mysql.connection.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify({'Supplier List ': result})
 
 
 if __name__ == '__main__':

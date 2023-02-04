@@ -64,31 +64,31 @@ FROM item
 INNER JOIN comments ON comments.itemID = item.itemID
 WHERE comments.itemID = '2';		 -- [given itemID]
 
--- 13 								BUG (Insert 'score' to comments table)
--- SELECT comments.commentID, comments.title, comments.date, comments.text, comments.itemID, comments.customerID
--- FROM item 
--- INNER JOIN comments ON comments.itemID = item.itemID
--- WHERE comments.itemID = '2'		 -- [given itemID]
--- order by comments.score desc
--- limit 3;
+-- 13
+ SELECT comments.commentID, comments.title, comments.date, comments.text, comments.itemID, comments.customerID
+ FROM item
+ INNER JOIN comments ON comments.itemID = item.itemID
+ WHERE comments.itemID = '2'		 -- [given itemID]
+ order by comments.score desc
+ limit 3;
 
--- 14 								BUG (Insert 'score' to comments table)
--- SELECT comments.commentID, comments.title, comments.date, comments.text, comments.itemID, comments.customerID
--- FROM item 
--- INNER JOIN comments ON comments.itemID = item.itemID
--- WHERE comments.itemID = '2'		 -- [given itemID]
--- order by comments.score asc
--- limit 3;
+-- 14
+ SELECT comments.commentID, comments.title, comments.date, comments.text, comments.itemID, comments.customerID
+ FROM item
+ INNER JOIN comments ON comments.itemID = item.itemID
+ WHERE comments.itemID = '2'		 -- [given itemID]
+ order by comments.score asc
+ limit 3;
 
--- 15								BUG (Change schema)
--- select sum(quantity)
--- from StoreProject.`Order_has_Item` rls
--- where rls.Item_itemID = 1
--- and exists ( select *
--- 	from StoreProject.`Order` o
--- 	where o.orderID = rls.Order_orderID
---     and o.status = "Done"
---     and month(o.orderDate) = 6 );
+-- 15
+ SELECT sum(quantity)
+ FROM StoreProject.`Order_has_Item` rls
+ WHERE rls.Item_itemID = 1
+ and exists ( select *
+ 	FROM StoreProject.`Order` o
+ 	WHERE o.orderID = rls.Order_orderID
+     and o.status = "Done"
+     and month(o.orderDate) = 6 );
     
 -- 16
 select avg(totalPrice)
