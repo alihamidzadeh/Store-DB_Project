@@ -9,7 +9,7 @@ app = Flask("StoreDataBaseApi")
 app.config['MYSQL_HOST'] = "localhost"
 app.config["MYSQL_USER"] = "root"
 app.config["MYSQL_PASSWORD"] = "root"  # 1414
-app.config["MYSQL_DATABASE"] = "StoreProject"
+app.config["MYSQL_DATABASE"] = "storeproject"
 
 mysql = MySQL(app)
 def get_user(token):
@@ -19,9 +19,9 @@ def get_user(token):
     if len(user) == 1:
         user = user[0]
         if user["isStaff"] == 1:
-            cursor.execute("select * from Staff where staffID=\"{}\"".format(user["userID"]))
+            cursor.execute("select * from staff where staffID=\"{}\"".format(user["userID"]))
         else:
-            cursor.execute("select * from Customer where staffID=\"{}\"".format(user["userID"]))
+            cursor.execute("select * from customer where customerID=\"{}\"".format(user["userID"]))
         res = cursor.fetchall()
         if len(res) == 1:
             return res[0]
@@ -35,7 +35,7 @@ def get_user_is_admin(token):
     if len(user) == 1:
         user = user[0]
         if user["isStaff"] == 1:
-            cursor.execute("select * from Staff where staffID=\"{}\" and managerID is null".format(user["userID"]))
+            cursor.execute("select * from staff where staffID=\"{}\" and managerID is null".format(user["userID"]))
             res = cursor.fetchall()
             if len(res) == 1:
                 return res[0]
@@ -48,9 +48,9 @@ def get_random_string(length):
 def register(userType):
     table = ""
     if userType.lower() == "customer":
-        table = "Customer"
+        table = "customer"
     elif userType.lower() == "staff":
-        table = "Staff"
+        table = "staff"
     else:
         return "Invalid type!"
     data = list(request.form.values())
@@ -77,16 +77,16 @@ def register(userType):
 @app.route('/login/<username>/<pwd>')  # pwd == 123example
 def login(username, pwd):
     rsp = ""
-    isStaff = 1 
+    isstaff = 1 
     user = None
     cursor = mysql.connection.cursor(dictionary=True)
-    cursor.execute("select * from Staff where userName=\"{}\"".format(username))
+    cursor.execute("select * from staff where userName=\"{}\"".format(username))
     res = cursor.fetchall()
     if len(res) > 1:
         rsp = "Two users with same username"
     elif len(res) == 0:
-        isStaff = 0 
-        cursor.execute("select * from Customer where userName =\"{}\"".format(username))
+        isstaff = 0 
+        cursor.execute("select * from customer where userName =\"{}\"".format(username))
         res = cursor.fetchall()
     if len(res) == 0:
         rsp = "No user found!"
@@ -96,7 +96,7 @@ def login(username, pwd):
         pwdhash = hashlib.sha256(pwd.encode('utf-8')).hexdigest()
         if pwdhash == password:
             ID = None
-            if isStaff == 1:
+            if isstaff == 1:
                 ID = user["staffID"] 
             else:
                 ID = user["customerID"]
@@ -135,7 +135,7 @@ def logout():
 @app.route('/get-all-items')
 def get_all_items():
     cursor = mysql.connection.cursor(dictionary=True)
-    cursor.execute("select * from Item")
+    cursor.execute("select * from item")
     res = cursor.fetchall()
     cursor.close()
     return res
@@ -144,7 +144,7 @@ def get_all_items():
 @app.route('/get-unique-categories')
 def get_unique_categories():
     cursor = mysql.connection.cursor(dictionary=True)
-    cursor.execute("select distinct category from Item")
+    cursor.execute("select distinct category from item")
     res = cursor.fetchall()
     cursor.close()
 
@@ -156,7 +156,7 @@ def get_all_orders():
     rsp = "Not logged in or you dont have permession!"
     if get_user_is_admin(request.form["token"]) != None:
         cursor = mysql.connection.cursor(dictionary=True)
-        cursor.execute("select * from `Order`")
+        cursor.execute("select * from `order`")
         rsp = cursor.fetchall()
         cursor.close()
     return rsp
@@ -168,10 +168,10 @@ def get_suppliers(item_id):
     if get_user(request.form["token"]) != None:
         cursor = mysql.connection.cursor(dictionary=True)
         cursor.execute("""
-        select * from Item, Supplier, Supplier_supplies_Item 
-        where Item.itemID = %s 
-        and Supplier_supplies_Item.Item_itemID = Item.itemID 
-        and Supplier.supplierID = Supplier_supplies_Item.Supplier_supplierID""", (item_id,))
+        select * from item, supplier, supplier_supplies_item 
+        where item.itemID = %s 
+        and supplier_supplies_item.Item_itemID = item.itemID 
+        and supplier.supplierID = supplier_supplies_item.Supplier_supplierID""", (item_id,))
         res = cursor.fetchall()
         cursor.close()
 
@@ -185,11 +185,11 @@ def get_best_supplier(item_id):
         cursor = mysql.connection.cursor(dictionary=True)
         cursor.execute("""
         select *
-        from Item, Supplier, Supplier_supplies_Item
-        where Item.itemID = %s
-        and Supplier_supplies_Item.Item_itemID = Item.itemID
-        and Supplier.supplierID = Supplier_supplies_Item.Supplier_supplierID
-        order by Item.currentPrice desc
+        from item, supplier, supplier_supplies_item
+        where item.itemID = %s
+        and supplier_supplies_item.Item_itemID = item.itemID
+        and supplier.supplierID = supplier_supplies_item.Supplier_supplierID
+        order by item.currentPrice desc
         limit 1""", (item_id,))
 
         rsp = cursor.fetchall()
@@ -201,10 +201,10 @@ def get_best_supplier(item_id):
 def get_comments(item_id):
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute("""
-    SELECT Comments.commentID, Comments.title, Comments.date, Comments.text, Comments.itemID, Comments.customerID
-    FROM Item 
-    INNER JOIN Comments ON Comments.itemID = Item.itemID
-    WHERE Comments.itemID = %s """, (item_id,))
+    SELECT comments.commentID, comments.title, comments.date, comments.text, comments.itemID, comments.customerID
+    FROM item 
+    INNER JOIN comments ON comments.itemID = item.itemID
+    WHERE comments.itemID = %s """, (item_id,))
 
     res = cursor.fetchall()
     cursor.close()
@@ -217,7 +217,7 @@ def get_done_average_price():
     rsp = "Not logged in or you dont have permession!"
     if get_user_is_admin(request.form["token"]) != None:
         cursor = mysql.connection.cursor(dictionary=True)
-        cursor.execute('select avg(totalPrice) from `Order` o where o.`status` = "Done"')
+        cursor.execute('select avg(totalPrice) from `order` o where o.`status` = "Done"')
         rsp = cursor.fetchall()
         cursor.close()
     return rsp
@@ -229,7 +229,7 @@ def get_customers_by_city(city):
     if get_user_is_admin(request.form["token"]) != None:
         cursor = mysql.connection.cursor(dictionary=True)
         cursor.execute("""
-        select * from Customer c
+        select * from customer c
         where exists ( select * from Addresses a where a.customerID = c.customerID and a.city = %s)""",
                        (city,))
 
@@ -254,7 +254,7 @@ def get_suppliers_by_city(city):
 
 @app.route('/productList')
 def productList():
-    query = 'select * from Item'
+    query = 'select * from item'
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute(query)
     result = cursor.fetchall()
@@ -266,7 +266,7 @@ def productList():
 def userList():
     rsp = "Not logged in or you dont have permession!"
     if get_user_is_admin(request.form["token"]) != None:
-        query = 'select * from Customer'
+        query = 'select * from customer'
         cursor = mysql.connection.cursor(dictionary=True)
         cursor.execute(query)
         result = cursor.fetchall()
@@ -276,7 +276,7 @@ def userList():
 
 @app.route('/categoryList')
 def categoryList():
-    query = 'select distinct category from Item'
+    query = 'select distinct category from item'
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute(query)
     result = cursor.fetchall()
@@ -285,7 +285,7 @@ def categoryList():
 
 @app.route('/orderList')
 def orderList():
-    query = 'select * from `Order`'
+    query = 'select * from `order`'
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute(query)
     result = cursor.fetchall()
@@ -299,9 +299,9 @@ def userOrderList():
         cursor = mysql.connection.cursor(dictionary=True)
         query = ""
         if "customerID" in list(user.keys()):
-            query = "select * from `Order` where customerID = {}".format(user["customerID"])
+            query = "select * from `order` where customerID = {}".format(user["customerID"])
         else:
-            query = "select * from `Order`"
+            query = "select * from `order`"
         cursor.execute(query)
         rsp = cursor.fetchall()
         cursor.close()
@@ -309,7 +309,7 @@ def userOrderList():
 @app.route('/getTenBetterUser')
 def tenBetterUserList():
     query = 'select customerID, fName, lName, phoneNumber, ssn, userName, score '
-    query += 'from Customer '
+    query += 'from customer '
     query += 'order by score desc '
     query += 'limit 10;'
     cursor = mysql.connection.cursor(dictionary=True)
@@ -321,7 +321,7 @@ def tenBetterUserList():
 @app.route('/bestSellerItemsList')
 def bestSellerItemsList():
     query = 'select * '
-    query += 'from Item '
+    query += 'from item'
     query += 'order by score desc '
     query += 'limit 5;'
     cursor = mysql.connection.cursor(dictionary=True)
@@ -333,7 +333,7 @@ def bestSellerItemsList():
 @app.route('/specialOfferList')
 def specialOfferList():
     query = 'select itemID, name, currentPrice, category, offer '
-    query += 'from Item '
+    query += 'from item'
     query += 'where offer >= 15;'
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute(query)
@@ -344,10 +344,10 @@ def specialOfferList():
 @app.route('/supplierList/<itemId>')
 def supplierList(itemId):
     query = 'select * '
-    query += 'from Item, Supplier, Supplier_supplies_Item '
-    query += f'where Item.itemID = {itemId} -- given value '
-    query += 'and Supplier_supplies_Item.Item_itemID = Item.itemID '
-    query += 'and Supplier.supplierID = Supplier_supplies_Item.Supplier_supplierID; '
+    query += 'from item, supplier, supplier_supplies_item '
+    query += f'where item.itemID = {itemId} -- given value '
+    query += 'and supplier_supplies_item.Item_itemID = item.itemID '
+    query += 'and supplier.supplierID = supplier_supplies_item.Supplier_supplierID; '
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute(query)
     result = cursor.fetchall()
@@ -357,11 +357,11 @@ def supplierList(itemId):
 @app.route('/cheapestSeller/<itemId>')
 def cheapestSellerList(itemId):
     query = 'select * '
-    query += 'from Item, Supplier, Supplier_supplies_Item '
-    query += f'where Item.itemID = {itemId} -- given value '
-    query += 'and Supplier_supplies_Item.Item_itemID = Item.itemID '
-    query += 'and Supplier.supplierID = Supplier_supplies_Item.Supplier_supplierID '
-    query += 'order by Item.currentPrice desc '
+    query += 'from item, supplier, supplier_supplies_item '
+    query += f'where item.itemID = {itemId} -- given value '
+    query += 'and supplier_supplies_item.Item_itemID = item.itemID '
+    query += 'and supplier.supplierID = supplier_supplies_item.Supplier_supplierID '
+    query += 'order by item.currentPrice desc '
     query += 'limit 1;'
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute(query)
