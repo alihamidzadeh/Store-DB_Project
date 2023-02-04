@@ -77,7 +77,7 @@ def register(userType):
 @app.route('/login/<username>/<pwd>')  # pwd == 123example
 def login(username, pwd):
     rsp = ""
-    isstaff = 1 
+    isStaff = 1 
     user = None
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute("select * from staff where userName=\"{}\"".format(username))
@@ -85,7 +85,7 @@ def login(username, pwd):
     if len(res) > 1:
         rsp = "Two users with same username"
     elif len(res) == 0:
-        isstaff = 0 
+        isStaff = 0 
         cursor.execute("select * from customer where userName =\"{}\"".format(username))
         res = cursor.fetchall()
     if len(res) == 0:
@@ -96,7 +96,7 @@ def login(username, pwd):
         pwdhash = hashlib.sha256(pwd.encode('utf-8')).hexdigest()
         if pwdhash == password:
             ID = None
-            if isstaff == 1:
+            if isStaff == 1:
                 ID = user["staffID"] 
             else:
                 ID = user["customerID"]
@@ -323,7 +323,7 @@ def bestSellerItemsList():
     query = 'select * '
     query += 'from item'
     query += 'order by score desc '
-    query += 'limit 5;'
+    query += 'limit 5'
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute(query)
     result = cursor.fetchall()
@@ -345,28 +345,28 @@ def specialOfferList():
 def supplierList(itemId):
     query = 'select * '
     query += 'from item, supplier, supplier_supplies_item '
-    query += f'where item.itemID = {itemId} -- given value '
-    query += 'and supplier_supplies_item.Item_itemID = item.itemID '
-    query += 'and supplier.supplierID = supplier_supplies_item.Supplier_supplierID; '
+    query += 'where supplier_supplies_item.Item_itemID = item.itemID '
+    query += 'and supplier.supplierID = supplier_supplies_item.Supplier_supplierID '
+    query += 'and item.itemID = {}'.format(itemId)
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute(query)
     result = cursor.fetchall()
-    return jsonify({'Supplier List': result})
-
+    return jsonify({"Supplier List": result})
+ 
 
 @app.route('/cheapestSeller/<itemId>')
 def cheapestSellerList(itemId):
     query = 'select * '
     query += 'from item, supplier, supplier_supplies_item '
-    query += f'where item.itemID = {itemId} -- given value '
-    query += 'and supplier_supplies_item.Item_itemID = item.itemID '
+    query += 'where supplier_supplies_item.Item_itemID = item.itemID '
     query += 'and supplier.supplierID = supplier_supplies_item.Supplier_supplierID '
+    query += 'and item.itemID = \"{}\"'.format(itemId)
     query += 'order by item.currentPrice desc '
-    query += 'limit 1;'
+    query += 'limit 1'
     cursor = mysql.connection.cursor(dictionary=True)
     cursor.execute(query)
     result = cursor.fetchall()
-    return jsonify({'Seller List': result})
+    return jsonify({'seller list': result})
 
 
 if __name__ == '__main__':
