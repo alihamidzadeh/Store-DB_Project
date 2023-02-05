@@ -192,10 +192,10 @@ CREATE TABLE `customer` (
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
 INSERT INTO `customer` VALUES
-(1,'Ehsan','Ghorbani','09156646936','2002-02-22','0926252134','ehsangh190','3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7','eghorbani@gmail.com',1,0,NULL),
-(2,'Tina','tavakoli','09156646936','2002-02-22','0926251462','ttavakoli','3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7','example@site.com',0,0,NULL),
-(3,'Kiana','Kermani','0915001377','2002-04-16','0926252143','kkermani','3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7','kianakermani1381@gmail.com',0,0,NULL),
-(4,'Ali','Hamidzadeh','09152273816','2002-05-15','0926251885','ahamidzadeh','3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7','ahamidzadeh93@gmail.com',1,0,NULL);
+(1,'Ehsan','Ghorbani','09156646936','2002-02-22','0926252134','ehsangh190','3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7','eghorbani@gmail.com',1,8,NULL),
+(2,'Tina','tavakoli','09156646936','2002-02-22','0926251462','ttavakoli','3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7','example@site.com',0,10,NULL),
+(3,'Kiana','Kermani','0915001377','2002-04-16','0926252143','kkermani','3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7','kianakermani1381@gmail.com',0,3,NULL),
+(4,'Ali','Hamidzadeh','09152273816','2002-05-15','0926251885','ahamidzadeh','3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7','ahamidzadeh93@gmail.com',1,4,NULL);
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -750,3 +750,4 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2023-02-04 11:31:00
+-- customer-- 

@@ -15,8 +15,11 @@ select *
 from StoreProject.`Order`;
 
 -- 5                        -- hafte va mah okay nakardim
-select customerID, fName, lName, phoneNumber, ssn, userName, score
-from customer
+--select customerID, fName, lName, phoneNumber, ssn, userName, score
+--from customer
+--where customerID in (select customerID
+--                     From StoreProject.`Order`
+--                     WHERE )
 order by score desc
 limit 10;
 
