@@ -4,6 +4,8 @@ import hashlib
 import string
 import random
 
+from mysql.connector import cursor
+
 app = Flask("StoreDataBaseApi")
 
 app.config['MYSQL_HOST'] = "localhost"
@@ -118,7 +120,7 @@ def login(username, pwd):
                 cursor.execute("insert into login values (\"{}\", {}, {})".format(rsp, ID, isStaff))
                 mysql.connection.commit()
             else:
-                rsp = "You're Loged in!"
+                rsp = "You're Logged in!"
         else:
             rsp = "Incorrect Password!"
 
@@ -136,11 +138,11 @@ def logout():
     cursor.execute("select * from login where token=\"{}\"".format(token))
     res = cursor.fetchall()
     if len(res) != 1:
-        rsp = "Not Loged In!"
+        rsp = "Not Logged In!"
     else:
         cursor.execute("delete from login where token=\"{}\"".format(token))
         mysql.connection.commit()
-        rsp = "Loged out!"
+        rsp = "Logged out!"
     return rsp
 
 
@@ -357,7 +359,7 @@ def specialOfferList():
     return jsonify({'Item List': result})
 
 
-@app.route('/supplierList/<itemId>') 
+@app.route('/supplierList/<itemId>')
 def supplierList(itemId):
     rsp = "Not logged in or you dont have permession!"
     if get_user_is_admin(request.form["token"]) != None:
@@ -469,7 +471,7 @@ def quantitySellItem(itemId):
     return rsp
 
 
-@app.route('/AverageOfSell') 
+@app.route('/AverageOfSell')
 def AverageOfSell():
     rsp = "Not logged in or you dont have permession!"
     if get_user_is_admin(request.form["token"]) != None:
@@ -504,6 +506,18 @@ def SameCitySupplier(cityName):
     cursor.execute(query)
     result = cursor.fetchall()
     return jsonify({'Supplier List ': result})
+
+
+@app.route('/deleteItem/<itemID>')
+def deleteItem(itemID):
+    rsp = "Not logged in or you dont have permession!"
+    if get_user_is_admin(request.form["token"]) != None:
+        print(f"delete from item where itemID = {itemID}")
+        cursor.execute("delete from item where itemID = {itemID}")
+        rsp = f"Item with ID = {itemID} has been deleted!"
+        # mysql.connection.commit()
+    return rsp
+
 
 
 if __name__ == '__main__':

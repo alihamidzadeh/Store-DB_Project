@@ -538,7 +538,10 @@ INSERT INTO `staff` VALUES
 (1,'Sina','Golmakani',25000000,'Boss','0926252184','2019-05-14 09:00:00','989152246517',1,'IRAN-Tehran-Sajad 5-NO.22','562','5126487523','sgolmakani@gmail.com','sgolmakani','3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7','1850-02-20','080180000001254896251342',NULL),
 (2,'Elham','Gholami',5000000,'Manager','0926252183','2022-11-05 11:00:00','989387921536',1,'IRAN-Shiraz-Emamat 28-NO.5','784','9716478523','egholami80@gmail.com','egholami','3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7','1995-08-01','098780000001254796242342',1),
 (3,'Fateneh','tataba',2000000,'DBadminn','9262070400','1990-04-26 09:22:00','989396330',0,'Iran , Mashad , piroozi BLv , piroozi 21','987654321','123456','fatemeh28389@gmail.com','fatmeheh ','3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7','1990-03-02','546789',1),
-(4,'hamid','kermami',5000000,'scrum master','051258','2020-04-26 10:22:00','972852',1,'Iran , Mashad , piroozi BLv , hashemie 50','94567841','9854785','kermaniha@gmail.com','hamid52 ','3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7','1985-03-02','546789',2);
+(4,'hamid','kermami',5000000,'scrum master','051258','2020-04-26 10:22:00','972852',1,'Iran , Mashad , piroozi BLv , hashemie 50','94567841','9854785','kermaniha@gmail.com','hamid52 ','3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7','1985-03-02','546789',2),
+(5,'kamran','niki',4000000,'Programmer','051258','2020-04-26 10:22:00','972852',1,'Iran , Mashad , piroozi BLv , hashemie 50','94567841','9854785','kamran@gmail.com','kamran','3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7','1985-03-02','546789',2),
+(6,'ali','niki',2700000,'Programmer','051258','2020-04-26 10:22:00','972852',1,'Iran , Mashad , piroozi BLv , hashemie 50','94567841','9854785','ali@gmail.com','ali81','3bcf860d93e657407b8ec1dbfbfa59220ed16a4ecdf4682fa52310971fde5cf7','1985-03-02','546789',1);
+
 /*!40000 ALTER TABLE `staff` ENABLE KEYS */;
 UNLOCK TABLES;
 
